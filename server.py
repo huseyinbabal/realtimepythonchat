@@ -3,8 +3,7 @@ from gevent import monkey
 monkey.patch_all()
 
 from flask import Flask, render_template, session, request
-from flask.ext.socketio import SocketIO, emit, join_room, leave_room, \
-    close_room, disconnect
+from flask.ext.socketio import SocketIO, emit, join_room
 
 app = Flask(__name__)
 app.debug = True
@@ -23,16 +22,12 @@ def login():
 
 @socketio.on('message', namespace='/chat')
 def chat_message(message):
-    emit('message', {'data': message['data']}, broadcast = True)
+    emit('message', message, broadcast = True)
 
 @socketio.on('connect', namespace='/chat')
 def test_connect():
     emit('my response', {'data': 'Connected', 'count': 0})
 
-
-@socketio.on('disconnect', namespace='/chat')
-def test_disconnect():
-    print('Client disconnected')
 
 if __name__ == '__main__':
     socketio.run(app)
